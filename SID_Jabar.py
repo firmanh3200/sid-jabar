@@ -6,7 +6,7 @@ from datetime import datetime
 # Ambil tanggal hari ini
 tanggal_hari_ini = datetime.now().strftime("%d-%m-%Y")
 
-st.title("Pairing Kode BPS - Kemendesa")
+st.title("Skor SDG's Desa")
 st.warning(f"Sumber: https://sid.kemendesa.go.id/profile, Kondisi: {tanggal_hari_ini}")
 st.subheader("", divider='green')
 

@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
+import plotly.express as px
 
 # Ambil tanggal hari ini
 tanggal_hari_ini = datetime.now().strftime("%d-%m-%Y")
@@ -64,32 +65,65 @@ if pilihandesa:
             data = response.json()
             
             # Extracting the required data
-            age_groups = ["0_4", "5_9", "10_14", "15_19", "20_24", "25_29", "30_34", "35_39", "40_44", "45_49", "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
-            male_data = [data[f"l_{age}"] for age in age_groups]
+            age_groups = ["0_4", "5_9", "10_14", "15_19", "20_24", 
+                          "25_29", "30_34", "35_39", "40_44", "45_49", 
+                          "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
+            male_data = [-data[f"l_{age}"] for age in age_groups]
             female_data = [data[f"p_{age}"] for age in age_groups]
             
+            # Extracting the required data
+            age_groups2 = ["0_4", "5_9", "10_14", "15_19", "20_24", 
+                          "25_29", "30_34", "35_39", "40_44", "45_49", 
+                          "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
+            male_data2 = [data[f"l_{age}"] for age in age_groups]
+            female_data2 = [data[f"p_{age}"] for age in age_groups]
+            
             # Creating the DataFrame
-            df = pd.DataFrame({
+            df5 = pd.DataFrame({
                 "umur": age_groups,
                 "laki-laki": male_data,
                 "perempuan": female_data
             })
             
+            # Creating the DataFrame
+            df6 = pd.DataFrame({
+                "umur": age_groups2,
+                "laki-laki": male_data2,
+                "perempuan": female_data2
+            })
+            
             # Mengonversi data menjadi DataFrame
             df3 = pd.DataFrame([data])
+            variabel = ['total_data', 'gender_men', 'gender_women', 'belum_kawin', 
+                        'kawin', 'cerai_hidup', 'cerai_mati', 'wni', 'wna', 'last_update']
+            df4 = df3[variabel]
+            df4 = df4.rename(columns={'total_data':'Jumlah Penduduk', 
+                                      'gender_men':'Laki-laki',
+                                      'gender_women':'Perempuan',
+                                      'last_update':'Pemutakhiran Data'})
+            st.success(f"Jumlah Penduduk {pilihandesa}")
             
-            df4 = df3.T
-            tanggal = df3['last_update']
-            st.success(f"Jumlah Penduduk {pilihandesa}, Tanggal {tanggal}")
-            
-            st.dataframe(df, hide_index=True)
-            
-            st.dataframe(df4, hide_index=False)
+            kolom1, kolom2 = st.columns([3,2])
+            with kolom1:
+                # Membuat piramida penduduk
+                fig = px.bar(df5,
+                            x=['laki-laki', 'perempuan'],
+                            y='umur',
+                            orientation='h',
+                            title='Piramida Penduduk',
+                            labels={'value': 'Jumlah', 'umur': 'Umur'},
+                            barmode='relative')
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+            with kolom2:
+                st.dataframe(df6, hide_index=True, use_container_width=True)
+                        
+            st.dataframe(df4, hide_index=True, use_container_width=True)
         except ValueError:
             st.error("Tidak dapat mengonversi respons menjadi JSON.")
     else:
         st.error(f"Data Belum Tersedia")
-        
-    url2 = f"https://sid.kemendesa.go.id/sdgs/searching/score-sdgs?location_code=&province_id=32&city_id={kabterpilih}&district_id={kecterpilih}&village_id={desaterpilih}"
     
-    response2 = requests.get(url2)
+    
+        
