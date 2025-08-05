@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import plotly.express as px
 from datetime import datetime
+import plotly.express as px
 
 # Ambil tanggal hari ini
 tanggal_hari_ini = datetime.now().strftime("%d-%m-%Y")
@@ -65,15 +66,31 @@ if pilihandesa:
             data = response.json()
             
             # Extracting the required data
-            age_groups = ["0_4", "5_9", "10_14", "15_19", "20_24", "25_29", "30_34", "35_39", "40_44", "45_49", "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
-            male_data = [data[f"l_{age}"] for age in age_groups]
+            age_groups = ["0_4", "5_9", "10_14", "15_19", "20_24", 
+                          "25_29", "30_34", "35_39", "40_44", "45_49", 
+                          "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
+            male_data = [-data[f"l_{age}"] for age in age_groups]
             female_data = [data[f"p_{age}"] for age in age_groups]
             
+            # Extracting the required data
+            age_groups2 = ["0_4", "5_9", "10_14", "15_19", "20_24", 
+                          "25_29", "30_34", "35_39", "40_44", "45_49", 
+                          "50_54", "55_59", "60_64", "65_69", "70_74", "75_plus"]
+            male_data2 = [data[f"l_{age}"] for age in age_groups]
+            female_data2 = [data[f"p_{age}"] for age in age_groups]
+            
             # Creating the DataFrame
-            df = pd.DataFrame({
+            df5 = pd.DataFrame({
                 "umur": age_groups,
                 "laki-laki": male_data,
                 "perempuan": female_data
+            })
+            
+            # Creating the DataFrame
+            df6 = pd.DataFrame({
+                "umur": age_groups2,
+                "laki-laki": male_data2,
+                "perempuan": female_data2
             })
             
             # Mengonversi data menjadi DataFrame
@@ -85,31 +102,11 @@ if pilihandesa:
             
             st.dataframe(df, hide_index=True)
             
-            df['laki-laki'] = df['laki-laki'] * -1
-            
-            fig = px.bar(df, x=['laki-laki', 'perempuan'], y='umur', labels={'variable':''},
-                             orientation='h', color_discrete_map={'laki-laki':'brown', 'perempuan':'orange'})
-            
-            # Menempatkan legenda di bawah tengah
-            fig.update_layout(
-                xaxis_title="",
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.2,
-                    xanchor="center",
-                    x=0.5
-                )
-            )
-            st.info(f"Piramida Penduduk")
-            st.plotly_chart(fig)
-            
             st.dataframe(df4, hide_index=False)
         except ValueError:
             st.error("Tidak dapat mengonversi respons menjadi JSON.")
     else:
         st.error(f"Data Belum Tersedia")
-        
-    url2 = f"https://sid.kemendesa.go.id/sdgs/searching/score-sdgs?location_code=&province_id=32&city_id={kabterpilih}&district_id={kecterpilih}&village_id={desaterpilih}"
     
-    response2 = requests.get(url2)
+    
+        
