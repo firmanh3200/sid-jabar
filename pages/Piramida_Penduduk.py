@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import plotly.express as px
 from datetime import datetime
 
 # Ambil tanggal hari ini
@@ -83,6 +84,25 @@ if pilihandesa:
             st.success(f"Jumlah Penduduk {pilihandesa}, Tanggal {tanggal}")
             
             st.dataframe(df, hide_index=True)
+            
+            df['laki-laki'] = df['laki-laki'] * -1
+            
+            fig = px.bar(df, x=['laki-laki', 'perempuan'], y='umur', labels={'variable':''},
+                             orientation='h', color_discrete_map={'laki-laki':'brown', 'perempuan':'orange'})
+            
+            # Menempatkan legenda di bawah tengah
+            fig.update_layout(
+                xaxis_title="",
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.2,
+                    xanchor="center",
+                    x=0.5
+                )
+            )
+            st.info(f"Piramida Penduduk")
+            st.plotly_chart(fig)
             
             st.dataframe(df4, hide_index=False)
         except ValueError:
